@@ -1,116 +1,72 @@
-/* The site
+/* The site — Forme 1.1
 
-   Ink on warm paper, one oxidised-brass accent, no border radius anywhere. EB
-   Garamond for the argument, JetBrains Mono for every number.
+   A press-shop plate rather than a page: locked-up blocks, dimensioned like a
+   drawing, packed to the edges. Process inks — cyan, magenta, yellow, key —
+   as flat plates rather than accents, not a paper-and-ink book page. The
+   masthead is deliberately out of register by default; the docket's
+   "in register" control puts it back. That is the one joke on the page.
 
-   Everything vertical is a multiple of eight, and that gets the page its
-   rhythm. It does not get it phase, which is the entire point of the tool, so
-   the build runs Quoin against this page and writes the phase corrections to
-   baseline.css. If that file is missing the page is merely rhythmic, which is
-   where most well-made sites stop.
-
-   Single visual world on purpose: this is a letterpress page and it is the same
-   letterpress page in a dark room. Every colour is declared rather than
-   inherited, so it holds whatever ground it lands on. */
+   Everything vertical is still a multiple of eight, for the same reason it
+   always was: the tool this page is arguing for needs a page that already
+   quantises its rhythm before it can do anything about phase. This page
+   measures itself live, in the docket and the footer, using the real
+   library (quoin.global.js) rather than a copy of its logic.
+*/
 
 :root {
   --pitch: 8px;
 
-  --paper:      #EFE9DC;
-  --paper-lift: #F7F3EA;
-  --paper-sunk: #E5DECE;
-  --ink:        #191512;
-  --ink-soft:   #4A4034;
-  --ink-faint:  #7C7264;
-  --rule:       #D3C9B4;
-  --rule-hard:  #191512;
-  --brass:      #7A4A20;
-  --good:       #3D6B37;
-  --bad:        #A33418;
+  --ink:    #0F0F0E;
+  --paper:  #F2F0E8;
+  --white:  #FFFFFF;
+  --cyan:   #00A6E0;
+  --magenta:#E5007D;
+  --yellow: #FFE400;
+  --faint:  #8B897F;
+  --rule:   #C9C6BA;
 
-  --serif: "EB Garamond", Georgia, "Times New Roman", serif;
-  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
-
-  /*
-     33rem, not 36, and the grid picked it rather than the other way round.
-
-     576px is twelve modules of 48 and no gutter, which is a column start rather
-     than a column end, so a paragraph filling it stops halfway across a gutter.
-     528 is six columns and five gutters exactly. It is also 67 characters of EB
-     Garamond at 18px against 73 at the old width, which is the better of the two
-     measures anyway: the grid asked for the change and typography had no
-     objection.
-  */
-  /* The column grid this page is set on, named so the overlay can draw the
-     same one the layout uses rather than a picture of one. */
-  --gutter: 48px;
-  --column: 144px;
-  --measure: 33rem;
-  --shell: 72rem;
+  --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --sans:  "Archivo", ui-sans-serif, "Helvetica Neue", sans-serif;
+  --mono:  "Courier Prime", ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-
 html { -webkit-text-size-adjust: 100%; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure { margin: 0; padding: 0; }
+h1, h2, h3, h4 { font-weight: 400; font-size: inherit; line-height: inherit; }
+button { font: inherit; }
+img, svg { display: block; max-width: 100%; }
+table { border-collapse: collapse; }
 
 body {
   margin: 0;
+  /* Fixed-width plates below (640px, 456px, 480px, 520px, 320px columns)
+     do not reflow gracefully under ~1200px; the design has not been given a
+     narrow-width treatment yet (tracked as follow-up work), so a min-width
+     trades a horizontal scrollbar for a layout that never half-collapses. */
+  min-width: 1200px;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--serif);
-  /* 18/32: four grid rows of leading, and Garamond needs the room. */
-  font-size: 18px;
-  line-height: 32px;
+  font-size: 16px;
+  line-height: 24px;
   font-kerning: normal;
-  font-variant-ligatures: common-ligatures;
   -webkit-font-smoothing: antialiased;
 }
 
-/* The grid, drawn over everything, off until asked for. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 140ms linear;
-  background-image: repeating-linear-gradient(
-    to bottom, rgba(122, 74, 32, 0.28) 0 1px, transparent 1px var(--pitch));
+a { color: var(--yellow); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: var(--cyan); }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+code {
+  font-family: var(--mono);
+  font-size: .85em;
+  line-height: 0;
+  background: var(--yellow);
+  color: var(--ink);
+  padding: 1px 3px;
 }
-body.grid-on::after { opacity: 1; }
-
-/*
-   The other axis, drawn the same way.
-
-   A baseline grid is a vertical rhythm inside a column grid and this page only
-   ever showed you the vertical half. The columns are real: 1104px of shell,
-   48px gutters, six columns of 144px, and 48 is six rows so the two axes are
-   measured in the same unit rather than in two conventions that happen to sit
-   next to each other.
-
-   Drawn as the columns themselves rather than as lines, because a column grid
-   is bands and a baseline grid is rules, and showing both as rules would make
-   two different things look like one.
-*/
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: min(100% - 48px, var(--shell) - 48px);
-  transform: translateX(-50%);
-  z-index: 89;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 140ms linear;
-  background-image: repeating-linear-gradient(
-    to right,
-    rgba(122, 74, 32, 0.10) 0 var(--column),
-    transparent var(--column) calc(var(--column) + var(--gutter)));
-}
-body.columns-on::before { opacity: 1; }
+pre code { background: none; padding: 0; color: inherit; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
@@ -124,521 +80,408 @@ body.columns-on::before { opacity: 1; }
   padding: 8px 16px;
   font-family: var(--mono);
   font-size: 13px;
+  z-index: 100;
 }
-.skip:focus { left: 8px; top: 8px; z-index: 100; }
+.skip:focus { left: 8px; top: 8px; }
 
-:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+/* ---------- the two live overlays ---------- */
 
-.shell { max-width: var(--shell); margin: 0 auto; padding: 0 24px; }
-.column { max-width: var(--measure); }
-
-/* ---------- type ---------- */
-
-h1 {
-  font-size: clamp(40px, 7vw, 72px);
-  line-height: 72px;
-  font-weight: 400;
-  letter-spacing: -0.015em;
-  margin: 0 0 24px;
-  text-wrap: balance;
-  max-width: 20ch;
+/* The docket's "baseline" control: the whole page's 8px pitch, drawn as
+   hairlines. Off until asked for, same as the specimen's local one below. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms linear;
+  background-image: repeating-linear-gradient(
+    to bottom, rgba(229, 0, 125, .35) 0 1px, transparent 1px var(--pitch));
 }
-h1 em { font-style: italic; color: var(--brass); }
+body.grid-on::after { opacity: 1; }
 
-h2 {
-  font-size: 34px;
-  line-height: 40px;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  margin: 0 0 16px;
-  text-wrap: balance;
-  max-width: 22ch;
+/* A rule that snaps to the pitch under the pointer, so the grid is
+   something you can feel rather than something you are told is there. */
+.pitch-cursor {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1px;
+  z-index: 41;
+  pointer-events: none;
+  background: var(--cyan);
+  opacity: 0;
+  transition: opacity 200ms linear;
 }
+.pitch-cursor.on { opacity: .5; }
 
-h3 {
+/* ---------- colour bar ---------- */
+
+.colourbar { display: flex; align-items: stretch; background: var(--white); border-bottom: 1px solid var(--ink); }
+.swatch { width: 24px; }
+.swatch-c { background: var(--cyan); }
+.swatch-m { background: var(--magenta); }
+.swatch-y { background: var(--yellow); }
+.swatch-k { background: var(--ink); }
+.swatch-c-50 { background: rgba(0, 166, 224, .5); }
+.swatch-m-50 { background: rgba(229, 0, 125, .5); }
+.swatch-y-50 { background: rgba(255, 228, 0, .5); }
+.swatch-k-50 { background: rgba(15, 15, 14, .5); }
+.swatch-c-trap { background: var(--cyan); mix-blend-mode: multiply; }
+.swatch-m-trap { background: var(--magenta); mix-blend-mode: multiply; margin-left: -12px; }
+.colourbar-spacer { flex: 1; }
+.colourbar-label {
+  padding: 2px 12px;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 10px;
+  line-height: 20px;
+  color: var(--faint);
+  letter-spacing: .1em;
+}
+.reg-mark { position: relative; width: 24px; border-left: 1px solid var(--ink); }
+.reg-mark i { display: block; position: absolute; background: var(--ink); }
+.reg-mark i:nth-child(1) { left: 50%; top: 0; bottom: 0; width: 1px; }
+.reg-mark i:nth-child(2) { top: 50%; left: 0; right: 0; height: 1px; }
+.reg-mark i:nth-child(3) {
+  left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px;
+  background: none; border: 1px solid var(--ink); border-radius: 50%;
+}
+
+/* ---------- docket ---------- */
+
+.docket {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 11px;
   line-height: 24px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--brass);
-  margin: 32px 0 8px;
-  text-wrap: balance;
 }
-
-p { margin: 0 0 24px; }
-p:last-child { margin-bottom: 0; }
-
-strong { font-weight: 600; }
-em { font-style: italic; }
-
-code {
+.docket-brand {
+  padding: 4px 16px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 900;
+  letter-spacing: .02em;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.docket-chip { padding: 4px 16px; border-right: 1px solid #333; white-space: nowrap; }
+.docket-chip-c { color: var(--cyan); }
+.docket-chip-m { color: var(--magenta); }
+.docket-controls { display: flex; margin-left: auto; }
+.docket-btn {
   font-family: var(--mono);
-  font-size: 0.82em;
-  background: var(--paper-sunk);
-  padding: 1px 4px;
-  /*
-     Zero, so the code does not make its line taller than the line-height says.
-
-     An inline element at a different font-size sits its baseline differently
-     inside the same line box: the half-leading is (line-height minus content
-     height) over two, and a smaller font has a smaller content height, so its
-     baseline lands lower in its own box. Align the two baselines and the union
-     of the boxes is more than either line-height.
-
-     One pixel, on this page. It was eighteen of the nineteen paragraphs that
-     were off the rhythm, against two of the forty-six that were on it, and
-     nothing about the CSS looks wrong. A zero line-height on an inline
-     contributes no box of its own, so the parent's strut governs the line and
-     the glyphs draw exactly where they did.
-  */
-  line-height: 0;
+  font-size: 11px;
+  line-height: 24px;
+  padding: 4px 16px;
+  border: 0;
+  border-left: 1px solid #333;
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+  white-space: nowrap;
 }
+.docket-btn:hover { background: rgba(255, 255, 255, .08); }
+.docket-btn[aria-pressed="true"] { color: var(--yellow); }
+.docket-score { padding: 4px 16px; background: var(--magenta); color: #fff; white-space: nowrap; }
 
-a { color: var(--brass); text-decoration-thickness: 1px; text-underline-offset: 3px; }
-a:hover { color: var(--ink); }
+/* ---------- the full-bleed working specimen ---------- */
 
-.kicker {
+.specimen { display: grid; grid-template-columns: 1fr 456px; border-bottom: 8px solid var(--ink); }
+
+.specimen-sheet {
+  position: relative;
+  background: var(--white);
+  border-right: 8px solid var(--ink);
+  padding: 32px 40px 40px;
+  overflow: hidden;
+}
+.specimen-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms linear;
+  background-image: repeating-linear-gradient(
+    to bottom, rgba(0, 166, 224, .5) 0 1px, transparent 1px var(--pitch));
+}
+.specimen-sheet.show-grid .specimen-grid { opacity: 1; }
+.specimen-kicker {
+  position: relative;
+  margin-bottom: 24px;
   font-family: var(--mono);
   font-size: 11px;
   line-height: 16px;
-  letter-spacing: 0.16em;
+  letter-spacing: .16em;
   text-transform: uppercase;
-  color: var(--brass);
-  margin: 0 0 24px;
+  color: var(--faint);
 }
-
-.standfirst {
-  font-size: 22px;
-  line-height: 32px;
-  color: var(--ink-soft);
-  max-width: 44ch;
-  margin: 0 0 40px;
+h3.specimen-block {
+  font-family: var(--sans);
+  font-size: 31px;
+  line-height: 1.47;
+  font-weight: 800;
+  letter-spacing: -.02em;
 }
+.specimen-block { position: relative; margin-bottom: 20px; font-size: 17px; line-height: 1.47; }
+.specimen-block-last { margin-bottom: 0; }
 
-.pull {
-  font-size: 22px;
-  line-height: 32px;
-  border-left: 3px solid var(--brass);
-  padding-left: 24px;
-  margin: 32px 0;
-  color: var(--ink);
-}
-
-.dim { color: var(--ink-faint); font-family: var(--mono); font-size: 11px; }
-
-/* ---------- borders are layout ---------- */
-
-/*
-   Every rule on this page is a hairline in the vertical flow, and a hairline is
-   a pixel. Six section borders plus seventeen table rows is twenty-three pixels
-   of accumulated offset, and the page below them drifts by exactly that.
-
-   This is the failure the README already documents on craighawkes.dev, where
-   twenty-one 1px hairlines were one of three causes of ninety distinct drift
-   values. It is also the reason the first build of this site reported itself
-   seated and measured 69% on a fresh load: the corrections were computed for a
-   layout one pixel taller than the one that shipped.
-
-   So every bordered box below subtracts its border from its own padding. The
-   rule stays, the box stays a whole number of grid rows, and nothing downstream
-   moves. Quantise what CSS can quantise; leave the tool to do phase.
-*/
-
-.hero {
-  /* 64 + content + 53 + 3px border = a whole number of rows */
-  padding: 64px 0 53px;
-  border-bottom: 3px solid var(--rule-hard);
-}
-
-/* ---------- the specimen demo ---------- */
-
-/* A 1px rule on all four sides is 2px of height, so the box needs 6px of its
-   own to reach the next row. Split evenly, because the panel is a frame around
-   something rather than a block of text, and it should stay centred in it. */
-.demo {
-  border: 1px solid var(--rule-hard);
-  padding: 3px 0;
-  background: var(--paper-lift);
-}
-
-.demo-bar {
-  display: flex;
-  flex-wrap: wrap;
-  /* 8px of row gap, so wrapping costs a whole number of rows rather than
-     whatever the buttons happen to be tall. */
-  gap: 8px 24px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px 11px;
-  border-bottom: 1px solid var(--rule-hard);
-  background: var(--paper-sunk);
-}
-.demo-readout {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.specimen-panel { background: var(--ink); color: var(--paper); padding: 32px 32px 40px; display: flex; flex-direction: column; }
+.specimen-panel-kicker {
+  margin-bottom: 8px;
   font-family: var(--mono);
-  font-size: 13px;
-  line-height: 24px;
-  color: var(--ink-soft);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--yellow);
 }
-.demo-readout .dot {
-  width: 8px; height: 8px; flex: none;
-  background: var(--ink-faint);
+.specimen-score {
+  font-family: var(--sans);
+  font-size: 152px;
+  line-height: 144px;
+  font-weight: 900;
+  letter-spacing: -.05em;
+  color: var(--cyan);
+  font-variant-numeric: tabular-nums;
 }
-.demo-readout .dot[data-state="bad"] { background: var(--bad); }
-.demo-readout .dot[data-state="good"] { background: var(--good); }
-#demoScore b { color: var(--ink); font-weight: 700; }
-
-.demo-buttons { display: flex; gap: 8px; }
-.demo-buttons button {
-  font-family: var(--mono);
-  font-size: 13px;
-  /* 22 + 4 + 4 + two 1px borders = 32 */
-  line-height: 22px;
-  padding: 4px 16px;
-  border: 1px solid var(--rule-hard);
-  background: var(--paper-lift);
-  color: var(--ink);
-  cursor: pointer;
-}
-.demo-buttons button:hover { background: var(--paper); }
-.demo-buttons button[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--paper-lift); }
-.demo-buttons .primary { background: var(--ink); border-color: var(--ink); color: var(--paper-lift); }
-.demo-buttons .primary:hover { background: var(--brass); border-color: var(--brass); }
-
-#specimen {
-  display: block;
-  width: 100%;
-  height: 640px;
+.specimen-note { margin-bottom: 24px; font-family: var(--mono); font-size: 12px; line-height: 24px; color: #9A988E; }
+.specimen-actions { display: grid; gap: 8px; margin-bottom: 24px; }
+.specimen-seat {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: .02em;
+  padding: 12px 16px;
   border: 0;
-  background: var(--paper-lift);
+  background: var(--magenta);
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
 }
-
-.demo-foot {
-  margin: 0;
-  padding: 11px 16px 12px;
-  border-top: 1px solid var(--rule);
+.specimen-seat:hover { background: #C40070; }
+.specimen-seat[aria-pressed="true"] { background: var(--cyan); color: var(--ink); }
+.specimen-subactions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.specimen-subactions button {
   font-family: var(--mono);
   font-size: 12px;
-  line-height: 24px;
-  color: var(--ink-faint);
+  padding: 8px 12px;
+  border: 1px solid #444;
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+}
+.specimen-subactions button:hover { background: #1C1C1A; }
+.specimen-subactions button[aria-pressed="true"] { color: var(--cyan); border-color: var(--cyan); }
+.specimen-footnote { margin-top: auto; font-family: var(--mono); font-size: 11px; line-height: 20px; color: #7E7C73; }
+
+/* ---------- masthead, cropped ---------- */
+
+.masthead { position: relative; background: var(--yellow); border-bottom: 8px solid var(--ink); overflow: hidden; }
+.masthead-headline {
+  padding: 24px 0 16px 24px;
+  font-family: var(--sans);
+  font-weight: 900;
+  font-size: 136px;
+  line-height: 120px;
+  letter-spacing: -.055em;
+  white-space: nowrap;
+  color: var(--ink);
+  text-shadow: 3px -2px 0 var(--cyan), -3px 2px 0 var(--magenta);
+  transition: text-shadow 200ms linear;
+}
+.masthead-headline.in-register { text-shadow: none; }
+.masthead-strip { display: grid; grid-template-columns: 1fr 1fr 456px; border-top: 2px solid var(--ink); }
+.masthead-strip p { padding: 16px 24px; border-right: 2px solid var(--ink); font-size: 17px; line-height: 24px; }
+.masthead-strip p:last-child { border-right: 0; }
+.masthead-strip p.mono { font-family: var(--mono); font-size: 12px; line-height: 24px; }
+
+/* ---------- plate heads ---------- */
+
+.plate-head { display: flex; align-items: baseline; gap: 16px; background: var(--ink); color: var(--paper); padding: 8px 24px; }
+.plate-num { font-family: var(--sans); font-weight: 900; font-size: 40px; line-height: 40px; }
+.plate-num-c { color: var(--cyan); }
+.plate-num-m { color: var(--magenta); }
+.plate-num-y { color: var(--yellow); }
+.plate-title { font-family: var(--sans); font-weight: 800; font-size: 20px; letter-spacing: .08em; }
+.plate-meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--faint); white-space: nowrap; }
+
+.plate-close { color: #fff; font-family: var(--sans); font-weight: 800; letter-spacing: -.01em; }
+.plate-close-c { background: var(--cyan); }
+.plate-close-m { background: var(--magenta); }
+.plate-close-wide { padding: 24px; font-size: 64px; line-height: 64px; letter-spacing: -.035em; text-wrap: balance; }
+
+.label { margin-bottom: 8px; font-family: var(--sans); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+.label-c { color: var(--cyan); }
+.label-m { color: var(--magenta); }
+
+/* ---------- Plate I — the defect ---------- */
+
+.plate-i { display: grid; grid-template-columns: 640px 1fr; border-bottom: 8px solid var(--ink); }
+.diagram-col { position: relative; background: var(--white); border-right: 2px solid var(--ink); padding: 40px 32px 32px; }
+.diagram {
+  position: relative;
+  height: 160px;
+  border-top: 1px dashed var(--cyan);
+  border-bottom: 1px dashed var(--cyan);
+  background: rgba(0, 166, 224, .07);
+}
+.diagram-cap-line { position: absolute; left: 0; right: 0; top: 40px; height: 1px; background: var(--magenta); }
+.diagram-baseline { position: absolute; left: 0; right: 0; top: 120px; height: 2px; background: var(--ink); }
+.diagram-glyphs { position: absolute; left: 24px; top: 24px; font-family: var(--serif); font-size: 96px; line-height: 96px; }
+.diagram-label { position: absolute; right: 8px; font-family: var(--mono); font-size: 10px; }
+.diagram-label-c { top: 2px; color: var(--cyan); }
+.diagram-label-m { top: 42px; color: var(--magenta); }
+.diagram-label-baseline { top: 122px; font-weight: 700; color: var(--ink); }
+.diagram-scale { display: flex; justify-content: space-between; padding-top: 8px; font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.diagram-note { margin-top: 24px; font-family: var(--mono); font-size: 12px; line-height: 20px; color: var(--faint); }
+
+.plate-i-right { display: grid; grid-template-columns: 1fr 1fr; background: var(--paper); }
+.plate-i-lede { padding: 24px; border-right: 1px solid var(--rule); font-size: 16px; line-height: 24px; }
+.rhythm-phase { padding: 24px; }
+.rhythm-phase-text { margin-bottom: 24px; font-size: 15px; line-height: 24px; }
+.rhythm-phase-text-last { margin-bottom: 0; }
+.plate-i-right .plate-close {
+  grid-column: span 2;
+  padding: 16px 24px;
+  border-top: 2px solid var(--ink);
+  font-size: 32px;
+  line-height: 40px;
 }
 
-/* ---------- sections ---------- */
+/* ---------- Plate II — the survey ---------- */
 
-/* 56 + content + 55 + 1px border = 112 */
-section { padding: 56px 0 55px; border-bottom: 1px solid var(--rule); }
-.survey, .get { background: var(--paper-lift); }
-.solve { background: var(--paper); }
-.formula {
-  font-family: var(--mono);
-  font-size: 15px;
-  line-height: 32px;
-  padding: 0 0 0 24px;
-  border-left: 3px solid var(--brass);
-  margin: 24px 0;
-}
-.formula code { background: none; padding: 0; font-size: inherit; }
-.findings { background: var(--ink); color: var(--paper-lift); }
+.plate-ii { background: var(--yellow); border-bottom: 8px solid var(--ink); display: grid; grid-template-columns: 1fr 480px; }
+.survey-col { padding: 24px; border-right: 2px solid var(--ink); }
 
-.split {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 24px 40px;
-  margin: 32px 0;
-  padding-top: 7px;
-  border-top: 1px solid var(--rule);
-}
-.split h3 { margin-top: 8px; }
-.split p { margin-bottom: 0; }
-
-/* ---------- tables ---------- */
-
-.tablewrap { overflow-x: auto; margin: 32px 0; }
-.tablewrap.tight { margin: 24px 0; }
-
-table {
+.survey-table {
   width: 100%;
-  /*
-     Separate, not collapse, and it is the grid that decides it.
-
-     Under `border-collapse: collapse` a border is centred on the edge between
-     two cells, half inside each, so a cell with 24px of line, 7px of padding and
-     a 1px rule renders 32.5px rather than 32. The box height stops being the sum
-     of its parts, which means no arithmetic about it is safe and no tool can
-     check it. Separate borders with no spacing look the same here, because only
-     border-bottom is set, and they add up.
-  */
   border-collapse: separate;
   border-spacing: 0;
   font-family: var(--mono);
-  font-size: 13px;
-  line-height: 32px;
-  font-variant-numeric: tabular-nums;
-  min-width: 34rem;
-}
-caption {
-  text-align: left;
-  font-family: var(--mono);
-  font-size: 11px;
-  line-height: 24px;
-  color: var(--ink-faint);
-  padding-bottom: 8px;
-}
-thead th {
-  text-align: right;
-  font-weight: 500;
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  border-bottom: 2px solid var(--rule-hard);
-  /* 16 + 3 + 3 + 2px border = 24.
-
-     It was 22 + 2, which is also 24, and the row was right while none of its
-     parts were: a 22px leading is not a whole number of rows and neither is a
-     2px border, so the tool could only say the box was correct by accident.
-     Moving six pixels out of the leading and into symmetric padding leaves the
-     text in exactly the same place, to the pixel, and puts every part of the
-     box on the grid rather than only their total. */
-  padding: 3px 16px 3px 0;
-  line-height: 16px;
-}
-thead th:first-child { text-align: left; }
-/* 24 + 3.5 + 3.5 + 1px border = 32, so seventeen rows are 544 rather than 561.
-
-   It was 31 + 1, which is also 32. The row was a whole number of rows and not
-   one part of it was, so it held by arithmetic that no tool could confirm and
-   no edit could safely touch. The seven pixels are in the padding now, split
-   evenly, which leaves the text where it was: centred 15.5px down either way. */
-tbody th {
-  text-align: left;
-  font-family: var(--serif);
-  font-size: 17px;
-  font-weight: 400;
-  line-height: 24px;
-  padding: 3.5px 16px 3.5px 0;
-  border-bottom: 1px solid var(--rule);
-}
-td {
-  text-align: right;
-  line-height: 24px;
-  padding: 3.5px 16px 3.5px 0;
-  border-bottom: 1px solid var(--rule);
-  white-space: nowrap;
-}
-/*
-   The bar is drawn, not laid out.
-
-   As an inline-block with `vertical-align: middle` it grew the line box of
-   every cell it sat in: rows measured 35px against a 32px line, so every table
-   put three pixels into the flow per row and the page below moved. Absolute
-   positioning takes it out of the line entirely, and the cell keeps its height.
-*/
-td { position: relative; }
-td i {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 6px;
-  background: var(--brass);
-  opacity: 0.45;
-  min-width: 2px;
-  pointer-events: none;
-}
-.ok { color: var(--good); font-weight: 700; }
-.bad { color: var(--bad); font-weight: 700; }
-/* 16 + 3.5 + 3.5 + 1px border = 24, the same total the 23 + 1 came to and the
-   same centre, with every part of it on the grid instead of only the sum. */
-table.compact tbody th, table.compact td {
-  line-height: 16px;
-  padding: 3.5px 16px 3.5px 0;
-}
-table.compact tbody th { font-size: 15px; }
-
-/* ---------- findings, on ink ---------- */
-
-.findings h2, .findings h3 { color: var(--paper-lift); }
-.findings p { color: #C9BFB0; }
-.findings code { background: rgba(247, 243, 234, 0.10); color: var(--paper-lift); }
-
-/*
-   48, not 40, and it is the horizontal half of the same argument.
-
-   The shell is 1104px of content. Divided by a 40px gutter it comes to 341.33px
-   at three columns and 150.67 at six, so every division after the first sits on
-   a fraction and nothing downstream can recover it. A 48px gutter divides it
-   whole at two, three, four and six: 528, 336, 240, 144.
-
-   It is also six rows, which is the point. The vertical rhythm and the
-   horizontal module were two separate conventions in this stylesheet and there
-   was no reason for them to be.
-*/
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: 48px;
-  margin-top: 40px;
-}
-.cards article { border-top: 2px solid var(--brass); padding-top: 14px; }
-.cardkick {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #C08B54 !important;
-  margin: 0 0 8px;
-  line-height: 16px;
-}
-.cards h3 {
-  font-family: var(--serif);
-  font-size: 22px;
-  line-height: 32px;
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
-  color: var(--paper-lift);
-  margin: 0 0 16px;
-}
-.cards p { font-size: 16px; line-height: 24px; }
-.cardnote { font-size: 14px !important; line-height: 24px; color: #9A9084 !important; }
-
-.figures {
-  margin: 16px 0;
-  /* 7 + 7 + two 1px borders = 16 */
-  padding: 7px 0;
-  border-top: 1px solid rgba(247, 243, 234, 0.14);
-  border-bottom: 1px solid rgba(247, 243, 234, 0.14);
-}
-/*
-   These rows rewrapped between one viewport and the next, which changed their
-   height and moved everything under them. Held on one line, with the label
-   allowed to shrink, so the block is the same number of rows at every width.
-*/
-.figures div {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: baseline;
-  gap: 8px;
-  line-height: 24px;
-}
-.figures dt {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: #9A9084;
-  flex: 1 1 auto;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.figures dd { flex: none; }
-.figures dd {
-  margin: 0;
-  font-family: var(--mono);
-  font-size: 15px;
-  font-variant-numeric: tabular-nums;
-  color: var(--paper-lift);
-}
-.figures dd.dim { font-size: 11px; color: #7F776C; }
-.findings .ok { color: #7FBF74; }
-.findings .bad { color: #E07A5F; }
-
-/* ---------- ways in ---------- */
-
-.ways {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-  gap: 48px;
-  margin: 32px 0 40px;
-}
-.ways article { border-top: 2px solid var(--rule-hard); padding-top: 14px; }
-.ways h3 { margin-top: 0; }
-.ways p { font-size: 16px; line-height: 24px; margin-bottom: 0; }
-pre {
-  margin: 0 0 16px;
-  padding: 12px 16px;
-  background: var(--ink);
-  color: var(--paper-lift);
-  overflow-x: auto;
-}
-pre code {
-  font-family: var(--mono);
   font-size: 12px;
   line-height: 24px;
-  background: none;
-  padding: 0;
-  color: inherit;
-  white-space: pre;
+  font-variant-numeric: tabular-nums;
 }
+.survey-table th, .survey-table td { text-align: right; padding: 3.5px 0 4px 16px; border-bottom: 1px solid rgba(15, 15, 14, .25); }
+.survey-table thead th {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--ink);
+  border-bottom: 3px solid var(--ink);
+  padding: 2px 0 3px 16px;
+  line-height: 16px;
+}
+.survey-table thead th:first-child { text-align: left; padding-left: 0; }
+.survey-table thead th.survey-grid-col { text-align: left; padding-left: 24px; width: 300px; }
+.survey-table th[scope="row"] { text-align: left; font-family: var(--sans); font-size: 15px; font-weight: 700; line-height: 24px; padding: 3.5px 16px 4px 0; }
+.survey-table td:nth-child(3) { text-align: left; padding-left: 24px; }
+
+.bar-cell { display: flex; align-items: center; gap: 12px; }
+.bar-track { flex: none; width: 200px; height: 10px; background: rgba(15, 15, 14, .14); }
+.bar-fill { display: block; height: 10px; background: var(--magenta); mix-blend-mode: multiply; }
+.bar-val { font-weight: 700; }
+
+.survey-side {}
+.stat-banner { padding: 24px; background: var(--magenta); color: #fff; font-family: var(--sans); font-weight: 900; font-size: 56px; line-height: 56px; letter-spacing: -.03em; }
+.survey-note { padding: 16px 24px; border-bottom: 2px solid var(--ink); font-size: 15px; line-height: 24px; }
+.survey-note-mono { font-family: var(--mono); font-size: 13px; line-height: 24px; }
+.survey-note-last { border-bottom: 0; }
+
+/* ---------- Plate III — move the grid to the design ---------- */
+
+.plate-iii-wrap { border-bottom: 8px solid var(--ink); }
+.plate-iii { display: grid; grid-template-columns: 1fr 520px; background: var(--white); }
+.plate-iii-text { padding: 24px; border-right: 2px solid var(--ink); }
+.plate-iii-lede { margin-bottom: 16px; font-size: 19px; line-height: 28px; }
+.plate-iii-text p { margin-bottom: 16px; font-size: 15px; line-height: 24px; }
+.plate-iii-text p:last-child { margin-bottom: 0; }
+.formula { margin-bottom: 16px; padding: 12px 16px; font-family: var(--mono); font-size: 15px; line-height: 24px; }
+.formula code { background: none; padding: 0; font-size: inherit; color: inherit; }
+.formula-c { background: var(--cyan); color: #fff; }
+
+.fit-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: var(--mono); font-size: 12px; line-height: 24px; font-variant-numeric: tabular-nums; }
+.fit-table caption { text-align: left; padding: 12px 24px; background: var(--ink); color: var(--faint); font-family: var(--mono); font-size: 11px; line-height: 16px; }
+.fit-table thead th {
+  text-align: left;
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 10px;
+  letter-spacing: .12em;
+  border-bottom: 3px solid var(--ink);
+  padding: 4px 12px 5px 24px;
+  line-height: 16px;
+}
+.fit-table thead th:not(:first-child) { text-align: right; padding: 4px 0 5px 12px; }
+.fit-table thead th:last-child { padding-right: 24px; }
+.fit-table tbody th { text-align: left; font-family: var(--sans); font-size: 14px; font-weight: 700; line-height: 24px; padding: 3.5px 12px 4px 24px; border-bottom: 1px solid var(--rule); }
+.fit-table td { text-align: right; padding: 3.5px 12px 4px 12px; border-bottom: 1px solid var(--rule); }
+.fit-table td.dim-col { color: var(--faint); }
+.fit-table td.moved-col { color: var(--magenta); padding-right: 24px; }
+.fit-table tbody tr:hover { background: var(--yellow); }
+.fit-note { padding: 16px 24px; font-family: var(--mono); font-size: 12px; line-height: 20px; color: var(--faint); }
+.fit-note code { background: none; padding: 0; font-size: inherit; line-height: 0; color: inherit; }
+.fit-note-formula { color: var(--magenta); }
+
+/* ---------- Plate IV — where a correction holds ---------- */
+
+.plate-iv { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--paper); border-bottom: 8px solid var(--ink); }
+.holds-col { padding: 24px; border-right: 1px solid var(--rule); }
+.holds-col:last-child { border-right: 0; }
+.stat-row { margin-bottom: 16px; display: flex; align-items: baseline; gap: 12px; }
+.stat-num { font-family: var(--sans); font-weight: 900; font-size: 72px; line-height: 64px; }
+.stat-num-c { color: var(--cyan); }
+.stat-num-m { color: var(--magenta); }
+.stat-cap { font-family: var(--mono); font-size: 11px; line-height: 16px; color: var(--faint); }
+.holds-text { margin-bottom: 16px; font-size: 15px; line-height: 24px; }
+.holds-text-last { margin-bottom: 0; }
+
+.csp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-family: var(--mono); font-size: 11px; line-height: 20px; margin-top: 12px; }
+.csp-table th { text-align: left; font-family: var(--sans); font-size: 9px; letter-spacing: .1em; font-weight: 800; border-bottom: 2px solid var(--ink); padding: 2px 8px 3px 0; }
+.csp-table thead th:not(:first-child) { text-align: right; padding: 2px 0 3px 8px; }
+.csp-table tbody th { font-weight: 400; padding: 3px 8px 4px 0; border-bottom: 1px solid var(--rule); }
+.csp-table td { text-align: right; padding: 3px 0 4px 8px; border-bottom: 1px solid var(--rule); font-weight: 700; }
+.csp-table td.yes { color: var(--cyan); }
+.csp-table td.no { color: var(--magenta); }
+
+/* ---------- Plate V — found by building it ---------- */
+
+.findings-grid { background: var(--ink); color: var(--paper); display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 8px solid var(--ink); }
+.finding { padding: 24px; border-right: 1px solid #2C2C29; opacity: 0; transform: translateY(10px); }
+.finding:last-child { border-right: 0; }
+.finding.is-visible { opacity: 1; transform: translateY(0); transition: opacity 700ms cubic-bezier(.2,.6,.2,1), transform 700ms cubic-bezier(.2,.6,.2,1); }
+.finding-kick { margin-bottom: 12px; font-family: var(--sans); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--yellow); }
+.finding h3 { margin-bottom: 16px; font-family: var(--sans); font-size: 22px; line-height: 28px; font-weight: 800; letter-spacing: -.01em; color: #fff; }
+.finding-body { margin-bottom: 16px; font-family: var(--mono); font-size: 12px; line-height: 20px; color: #A9A79D; }
+.finding-figures { border-top: 2px solid var(--cyan); }
+.finding-figures div { display: flex; flex-wrap: nowrap; align-items: baseline; gap: 8px; line-height: 24px; border-bottom: 1px solid #2C2C29; }
+.finding-figures dt { font-family: var(--mono); font-size: 11px; color: var(--faint); flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.finding-figures dd { flex: none; font-family: var(--sans); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; color: var(--cyan); }
+
+/* ---------- Plate VI — six ways in ---------- */
+
+.ways-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 8px solid var(--ink); background: var(--white); }
+.way { padding: 24px; border-right: 1px solid var(--rule); }
+.way:nth-child(3n) { border-right: 0; }
+.way:nth-child(n+4) { border-top: 1px solid var(--rule); }
+.way h3 { margin-bottom: 12px; font-family: var(--sans); font-size: 15px; line-height: 24px; font-weight: 800; letter-spacing: .02em; }
+.way pre { margin-bottom: 12px; padding: 12px; background: var(--ink); overflow-x: auto; }
+.way pre code { font-family: var(--mono); font-size: 11px; line-height: 20px; color: var(--yellow); white-space: pre; }
+.way p { font-size: 15px; line-height: 24px; }
 
 /* ---------- footer ---------- */
 
-footer { padding: 56px 0 64px; background: var(--paper); }
-.footgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 48px;
-  padding-top: 5px;
-  border-top: 3px solid var(--rule-hard);
-}
-.footkick {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin: 0 0 8px;
-  line-height: 24px;
-}
-.live {
-  font-family: var(--mono);
-  font-size: 24px;
-  line-height: 32px;
-  color: var(--brass);
-  margin: 0 0 8px;
-  font-variant-numeric: tabular-nums;
-}
-.footnote { font-size: 14px; line-height: 24px; color: var(--ink-faint); margin: 0 0 8px; }
-footer ul { margin: 0; padding: 0; list-style: none; }
-footer li { font-size: 16px; line-height: 32px; }
-footer ul.plain li {
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--ink-faint);
-  margin-bottom: 8px;
-}
-.link {
-  font: inherit;
-  font-size: 14px;
-  background: none;
-  border: 0;
-  padding: 0;
-  color: var(--brass);
-  border-bottom: 1px solid currentColor;
-  cursor: pointer;
-}
-.link:hover { color: var(--ink); }
-.colophon {
-  margin: 40px 0 0;
-  padding-top: 7px;
-  border-top: 1px solid var(--rule);
-  font-family: var(--mono);
-  font-size: 11px;
-  line-height: 24px;
-  color: var(--ink-faint);
-}
-
-/* ---------- narrow ---------- */
-
-@media (max-width: 40rem) {
-  body { font-size: 17px; line-height: 32px; }
-  .hero { padding: 40px 0 32px; }
-  h1 { line-height: 48px; }
-  #specimen { height: 520px; }
-  .standfirst { font-size: 19px; }
-}
+.forme-footer { display: grid; grid-template-columns: 1fr 1fr 1fr 320px; background: var(--ink); color: var(--paper); }
+.footer-col { padding: 16px 24px; font-family: var(--mono); font-size: 11px; line-height: 20px; color: var(--faint); }
+.footer-links { padding: 16px 24px; list-style: none; font-family: var(--mono); font-size: 11px; line-height: 20px; display: grid; gap: 4px; }
+.footer-links a { color: var(--yellow); }
+.footer-score { padding: 16px 24px; background: var(--cyan); color: var(--ink); font-family: var(--sans); font-weight: 800; font-size: 15px; line-height: 20px; }
