@@ -188,7 +188,7 @@
           <p>So a design keeps every size it asked for. The leading is snapped to the nearest whole number of rows, which is the one thing that moves and is the same thing InDesign moves when you tick the box. The space before each block is then solved to close that block's own cap height.</p>
         </div>
         <aside class="fit__side">
-          <table class="t-fit">
+          <div class="tscroll"><table class="t-fit">
             <caption>Three families, five sizes, nothing moved but the leading.</caption>
             <thead><tr>
               <th scope="col" class="l">NAME</th>
@@ -204,7 +204,7 @@
               <tr><th scope="row">lead</th><td>21px</td><td class="strong">32px</td><td class="faint">24.953px</td><td class="moved">leading +1.55</td></tr>
               <tr><th scope="row">code</th><td>15px</td><td class="strong">24px</td><td class="faint">22.422px</td><td class="moved">exact</td></tr>
             </tbody>
-          </table>
+          </table></div>
           <p class="fit__mod">A clamped size varies continuously, so its phase does too. CSS has <code class="chip chip--plain">mod()</code>, so the browser can do at layout time what the fitter does at build time: <code class="chip chip--m">margin-top: calc(6 &times; var(--pitch) &minus; mod(var(--cap), var(--pitch)))</code>. Eleven widths from 320 to 1440: a clamped heading goes from on the grid at no width to on the grid at every one.</p>
         </aside>
       </div>
@@ -231,7 +231,7 @@
       <div class="holds__cell">
         <h3 class="kick kick--c">WHY AN EXTENSION, NOT A PASTE-YOUR-URL BOX</h3>
         <p class="holds__body">A page's Content-Security-Policy governs script tags injected from outside, and a hosted service has no other way in. The two most famous URLs anyone would paste are the two it could not measure.</p>
-        <table class="t-csp">
+        <div class="tscroll"><table class="t-csp">
           <thead><tr>
             <th scope="col" class="l">ROUTE IN</th>
             <th scope="col">STRIPE</th>
@@ -243,7 +243,7 @@
             <tr><th scope="row" class="l">A <code>&lt;script&gt;</code> tag, which a hosted service must use</th><td class="bad">no</td><td class="bad">no</td><td class="ok">yes</td><td class="ok">yes</td></tr>
             <tr><th scope="row" class="l"><code>chrome.scripting</code>, which the extension uses</th><td class="ok">yes</td><td class="ok">yes</td><td class="ok">yes</td><td class="ok">yes</td></tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
     </section>
 
