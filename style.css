@@ -28,6 +28,9 @@
 * { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
+/* No element may drag the sheet wider than the viewport. Tables scroll inside
+   their own boxes instead of pushing the whole page off canvas. */
+html, body { overflow-x: hidden; }
 
 body {
   margin: 0;
@@ -259,15 +262,19 @@ body.rule-live .cursor-rule { opacity: .5; }
 /* ---------------------------------------------------------------- *
    Masthead, cropped
 * ---------------------------------------------------------------- */
-.mast { position: relative; background: var(--y); border-bottom: 8px solid var(--k); overflow: hidden; }
+.mast { position: relative; background: var(--y); border-bottom: 8px solid var(--k); overflow: hidden; container-type: inline-size; }
 .mast__title {
   margin: 0;
   padding: 24px 0 16px 24px;
   font-family: var(--m2);
   font-weight: 900;
-  font-size: clamp(56px, 11.3vw, 136px);
-  line-height: .88;
-  letter-spacing: -.055em;
+  /* Sized to the sheet, not the viewport. The widest line ("ON A BASELINE GRID")
+     measures ~10.6em in Archivo Black, so dividing the available width by 11
+     leaves headroom and both rows sit fully on canvas from a phone up to a wall,
+     never cropped by the sheet's overflow. */
+  font-size: min(130px, calc((100cqw - 24px) / 11));
+  line-height: .95;
+  letter-spacing: -.04em;
   white-space: nowrap;
   color: var(--k);
   /* out of register by default — a decision, not an accident */
@@ -300,6 +307,10 @@ body.reg-in .mast__title { text-shadow: none; }
 .chip { font-family: var(--t); font-size: .85em; line-height: 0; background: var(--y); padding: 1px 3px; }
 .chip--plain { background: none; }
 .chip--m { background: none; color: var(--m); }
+
+/* Tables scroll inside their own box, never the page. */
+.tscroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.fit__side, .holds__cell, .survey__tablewrap { min-width: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
 /* ---------------------------------------------------------------- *
    Plate I — the defect
@@ -616,11 +627,37 @@ body.reg-in .mast__title { text-shadow: none; }
 @media (max-width: 640px) {
   .spec__sheet [data-seat] { font-size: 16px; }
   .spec__title { font-size: 26px; }
+  /* density strip: drop the caption so swatches fit the screen */
+  .bar__label { display: none; }
+  /* masthead fallback: if container queries are unsupported, wrap instead of clip */
+  .mast { overflow: visible; }
+  .mast__title { white-space: normal; font-size: clamp(28px, 9.5vw, 44px); }
   .stat__num { font-size: 56px; line-height: 56px; }
   .survey__big { font-size: 32px; line-height: 40px; }
   .fit__banner { font-size: 32px; line-height: 40px; }
   .defect__banner { font-size: 24px; line-height: 32px; }
   .linebox__glyph { font-size: 64px; line-height: 64px; top: 40px; }
+
+  /* Tables: shrink to sit on canvas, and scroll inside their box if they still can't */
+  .t-survey { font-size: 11px; }
+  .t-survey thead th.wide { width: auto; }
+  .t-survey thead th { padding-left: 8px; padding-right: 0; }
+  .t-survey thead th:first-child { padding-left: 0; }
+  .t-survey tbody td { padding-left: 8px; padding-right: 0; }
+  .t-survey tbody th[scope="row"] { padding-left: 0; padding-right: 8px; }
+  .track { width: 88px; }
+  .barcell { gap: 8px; }
+
+  .t-fit { font-size: 11px; }
+  .t-fit thead th, .t-fit tbody td { padding-left: 8px; padding-right: 8px; }
+  .t-fit thead th:first-child, .t-fit tbody th[scope="row"] { padding-left: 12px; }
+  .t-fit thead th:last-child, .t-fit tbody td:last-child { padding-right: 12px; }
+  .t-fit .moved { white-space: normal; }
+
+  .t-csp { font-size: 10px; }
+  .t-csp thead th, .t-csp tbody td { padding-left: 6px; padding-right: 6px; }
+  .t-csp tbody th[scope="row"] { white-space: normal; }
+
   .colo { grid-template-columns: 1fr; }
 }
 
